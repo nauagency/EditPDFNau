@@ -1,0 +1,63 @@
+{
+  "name": "editpdfnau",
+  "productName": "EditPDFNau",
+  "version": "0.1.1",
+  "license": "Apache-2.0",
+  "private": true,
+  "description": "Standalone AI PDF editor: view, edit, organize, sign, and save PDF documents",
+  "main": "out/main/index.js",
+  "scripts": {
+    "dev": "electron-vite dev",
+    "dev:renderer": "vite --config vite.renderer.config.ts",
+    "build": "electron-vite build",
+    "start": "electron-vite build && electron .",
+    "dist:win": "electron-vite build && electron-builder --win",
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit"
+  },
+  "build": {
+    "appId": "com.nauagency.editpdfnau",
+    "productName": "EditPDFNau",
+    "electronVersion": "43.8.3",
+    "asar": true,
+    "directories": {
+      "output": "../../dist/pdf"
+    },
+    "files": [
+      "out/**/*",
+      "package.json"
+    ],
+    "win": {
+      "target": "nsis"
+    }
+  },
+  "devDependencies": {
+    "@embedpdf/pdfium": "^2.15.1",
+    "@genoffice/agent-core": "*",
+    "@genoffice/ai-provider": "*",
+    "@genoffice/ai-search": "*",
+    "@genoffice/electron-utils": "*",
+    "@genoffice/font-metrics": "*",
+    "@genoffice/i18n": "*",
+    "@genoffice/ui": "*",
+    "@types/node-forge": "^1.3.14",
+    "@types/react": "^19.2.14",
+    "@types/react-dom": "^19.2.3",
+    "@vitejs/plugin-react": "^5.0.4",
+    "electron": "^43.8.3",
+    "electron-builder": "^26.0.12",
+    "electron-vite": "^5.0.0",
+    "harfbuzzjs": "^0.10.3",
+    "jsdom": "^28.0.0",
+    "node-forge": "^1.4.1",
+    "pdf-lib": "^1.17.1",
+    "pdfjs-dist": "^6.2.108",
+    "react": "^19.2.4",
+    "react-dom": "^19.2.4",
+    "typescript": "^5.9.3",
+    "vite": "^7.3.7",
+    "vite-plugin-static-copy": "^3.0.0",
+    "vitest": "^4.1.12"
+  },
+  "author": "Nauagency"
+}

@@ -1,0 +1,53 @@
+{
+  "name": "editpdfnau",
+  "version": "0.1.1",
+  "private": true,
+  "description": "EditPDFNau - Standalone AI PDF Editor (view, edit, organize, sign, and AI assistants)",
+  "license": "Apache-2.0",
+  "engines": {
+    "node": ">=22.12.0",
+    "npm": ">=10"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nauagency/EditPDFNau.git"
+  },
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "postinstall": "install-electron",
+    "format": "node tools/format-changed.mjs --write",
+    "format:check": "node tools/format-changed.mjs --check",
+    "lint": "eslint .",
+    "test": "npm run test -w editpdfnau",
+    "typecheck": "npm run typecheck -w editpdfnau",
+    "dev": "npm run dev -w editpdfnau",
+    "build": "npm run build -w editpdfnau",
+    "start": "npm run start -w editpdfnau",
+    "dist:win": "npm run dist:win -w editpdfnau"
+  },
+  "dependencies": {
+    "ws": "^8.21.1"
+  },
+  "overrides": {
+    "nanoid@3": "^3.3.17",
+    "nanoid@5": "^5.1.16",
+    "katex": "^0.18.2"
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "@playwright/test": "^1.61.1",
+    "concurrently": "^9.2.5",
+    "cross-env": "^10.1.0",
+    "eslint": "^10.8.0",
+    "eslint-plugin-react-hooks": "^7.1.1",
+    "globals": "^17.8.0",
+    "pixelmatch": "^7.2.0",
+    "playwright-core": "^1.61.1",
+    "pngjs": "^7.0.0",
+    "prettier": "^3.9.6",
+    "typescript-eslint": "^8.65.0"
+  }
+}
