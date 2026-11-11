@@ -9,6 +9,7 @@ import type { PdfApi, UiTheme } from '../shared/ipc'
 const api: PdfApi = {
   consumePending: () => ipcRenderer.invoke(PDF_CHANNELS.consumePending),
   openFileDialog: () => ipcRenderer.invoke(PDF_CHANNELS.openFileDialog),
+  openRecentFile: (path: string) => ipcRenderer.invoke(PDF_CHANNELS.openRecentFile, path),
   onOpenDocument: (handler) => {
     const listener = (_e: Electron.IpcRendererEvent, path: unknown) => {
       if (typeof path === 'string') handler(path)

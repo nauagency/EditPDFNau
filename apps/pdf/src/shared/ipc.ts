@@ -12,6 +12,7 @@ export const PDF_READ_CHUNK_BYTES = 8 * 1024 * 1024
 export const PDF_CHANNELS = {
   consumePending: 'pdf:consume-pending',
   openFileDialog: 'pdf:open-file-dialog',
+  openRecentFile: 'pdf:open-recent-file',
   openDocument: 'pdf:open-document',
   readFile: 'pdf:read-file',
   readFileChunk: 'pdf:read-file-chunk',
@@ -1045,6 +1046,8 @@ export interface PdfApi {
   consumePending(): Promise<string | null>
   /** Prompt open dialog to select a PDF file, grant it, and return the path */
   openFileDialog(): Promise<{ ok: boolean; path?: string; canceled?: boolean }>
+  /** Validate and grant a previously opened PDF path before the renderer reads it. */
+  openRecentFile(path: string): Promise<{ ok: boolean; path?: string }>
   /** Listen for document open requests pushed by the main process (e.g. Menu File > Open PDF) */
   onOpenDocument(handler: (path: string) => void): () => void
   /** open any shell-routed document path (an AI answer's filenav citation) */

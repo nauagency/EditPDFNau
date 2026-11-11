@@ -2405,6 +2405,19 @@ function registerPdfIpc(): void {
     if (!file) return { ok: false, canceled: true }
     return { ok: true, path: file }
   })
+
+  ipcMain.handle(PDF_CHANNELS.openRecentFile, (e, input: unknown) => {
+    if (typeof input !== 'string' || !input.trim()) return { ok: false as const }
+    const file = resolve(input)
+    if (!/\.pdf$/i.test(file) || !existsSync(file)) return { ok: false as const }
+    try {
+      if (!statSync(file).isFile()) return { ok: false as const }
+    } catch {
+      return { ok: false as const }
+    }
+    grantPdfPath(e.sender, file)
+    return { ok: true as const, path: file }
+  })
 }
 
 export function grantPdfPath(wc: WebContents, filePath: string): void {

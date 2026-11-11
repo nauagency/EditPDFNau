@@ -216,6 +216,153 @@ button {
   user-select: none;
 }
 
+.pdf-home {
+  width: min(960px, 100%);
+  height: min(680px, 100%);
+  display: grid;
+  grid-template-columns: minmax(250px, 0.72fr) minmax(360px, 1.28fr);
+  gap: 28px;
+  align-items: stretch;
+}
+
+.pdf-home-hero,
+.pdf-home-recents {
+  background: var(--bg-surface, var(--chrome-bg, #fff));
+  border: 1px solid var(--border, #d9dee7);
+  border-radius: 16px;
+}
+
+.pdf-home-hero {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 22px;
+  padding: 42px 36px;
+}
+
+.pdf-home-brand {
+  margin: 0 0 8px;
+  color: var(--text, #172033);
+  font-size: 30px;
+  line-height: 1.1;
+  letter-spacing: -0.6px;
+}
+
+.pdf-home-recents {
+  min-width: 0;
+  padding: 24px;
+  overflow: hidden;
+}
+
+.pdf-home-section-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.pdf-home-section-head h2 {
+  margin: 0;
+  color: var(--text, #172033);
+  font-size: 16px;
+}
+
+.pdf-home-clear {
+  border: 0;
+  color: var(--accent, #c43e1c);
+  background: transparent;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.pdf-home-empty {
+  display: grid;
+  min-height: 180px;
+  place-items: center;
+  border: 1px dashed var(--border-strong, #cbd5e1);
+  border-radius: 10px;
+  color: var(--text-dim, #64748b);
+  text-align: center;
+}
+
+.pdf-recent-list {
+  display: flex;
+  max-height: calc(100% - 42px);
+  flex-direction: column;
+  gap: 6px;
+  overflow: auto;
+}
+
+.pdf-recent-item {
+  display: grid;
+  grid-template-columns: 38px minmax(0, 1fr) auto;
+  gap: 12px;
+  align-items: center;
+  width: 100%;
+  padding: 10px;
+  border: 1px solid transparent;
+  border-radius: 9px;
+  color: var(--text, #172033);
+  background: transparent;
+  text-align: left;
+  cursor: pointer;
+}
+
+.pdf-recent-item:hover {
+  border-color: var(--border, #d9dee7);
+  background: var(--hover, rgba(15, 23, 42, 0.05));
+}
+
+.pdf-recent-icon {
+  display: grid;
+  width: 34px;
+  height: 38px;
+  place-items: center;
+  border-radius: 6px;
+  color: #fff;
+  background: #c43e1c;
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.pdf-recent-copy {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.pdf-recent-copy strong,
+.pdf-recent-copy span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.pdf-recent-copy strong {
+  font-size: 13px;
+}
+
+.pdf-recent-copy span,
+.pdf-recent-item time {
+  color: var(--text-dim, #64748b);
+  font-size: 11px;
+}
+
+@media (max-width: 760px) {
+  .pdf-home {
+    height: 100%;
+    grid-template-columns: 1fr;
+    overflow: auto;
+  }
+
+  .pdf-home-hero {
+    padding: 28px;
+  }
+}
+
 .pdf-empty-icon {
   display: flex;
   align-items: center;

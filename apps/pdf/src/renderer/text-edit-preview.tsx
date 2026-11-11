@@ -434,7 +434,7 @@ export const textEditPreviewParts = (
     if (te.input.align === 'right') style.justifyContent = 'flex-end'
   }
   const coverStyle =
-    te.cover && !erased
+    !erased
       ? {
           ...inflateCss(pdfRectToCss(geom, unionCover(te.input.rect, te.cover), scale), 1.5),
           ...paperCss(false, te.paper),

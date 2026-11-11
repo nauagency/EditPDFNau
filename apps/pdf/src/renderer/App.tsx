@@ -421,6 +421,39 @@ interface WrittenSteps {
 /** Each step holds the whole file twice: a long history of them would hold that much memory */
 const MAX_WRITTEN_STEPS = 10
 
+interface RecentPdf {
+  path: string
+  openedAt: number
+}
+const RECENT_PDFS_KEY = 'editpdfnau-recent-pdfs-v1'
+const MAX_RECENT_PDFS = 12
+
+function loadRecentPdfs(): RecentPdf[] {
+  try {
+    const parsed = JSON.parse(localStorage.getItem(RECENT_PDFS_KEY) ?? '[]') as unknown
+    if (!Array.isArray(parsed)) return []
+    return parsed
+      .filter(
+        (item): item is RecentPdf =>
+          !!item &&
+          typeof item === 'object' &&
+          typeof (item as RecentPdf).path === 'string' &&
+          typeof (item as RecentPdf).openedAt === 'number',
+      )
+      .slice(0, MAX_RECENT_PDFS)
+  } catch {
+    return []
+  }
+}
+
+function saveRecentPdfs(items: RecentPdf[]): void {
+  try {
+    localStorage.setItem(RECENT_PDFS_KEY, JSON.stringify(items.slice(0, MAX_RECENT_PDFS)))
+  } catch {
+    // A disabled local store must not prevent the editor from opening files.
+  }
+}
+
 export default function App() {
   const { lang, t } = useI18n()
   const collapse = useRibbonCollapse('genoffice-pdf-ribbon-collapsed', {
@@ -432,6 +465,7 @@ export default function App() {
   })
   const [doc, setDoc] = useState<PDFDocumentProxy | null>(null)
   const [filePath, setFilePath] = useState('')
+  const [recentPdfs, setRecentPdfs] = useState<RecentPdf[]>(loadRecentPdfs)
   useEffect(() => {
     if (filePath) {
       const fileName = filePath.split(/[/\\]/).pop() || ''
@@ -1754,6 +1788,14 @@ export default function App() {
             setScale(Math.min(MAX_SCALE, Math.max(MIN_SCALE, savedView.scale)))
         }
         setStatus('ready')
+        setRecentPdfs((previous) => {
+          const next = [
+            { path, openedAt: Date.now() },
+            ...previous.filter((item) => item.path.toLowerCase() !== path.toLowerCase()),
+          ].slice(0, MAX_RECENT_PDFS)
+          saveRecentPdfs(next)
+          return next
+        })
       } catch (err) {
         if ((err as Error | null)?.name === 'PasswordException') {
           // a certificate-encrypted document has no password to type: pdf.js
@@ -1794,6 +1836,22 @@ export default function App() {
       console.error('[pdf] open dialog failed:', err)
     }
   }, [openPath])
+
+  const handleOpenRecent = useCallback(
+    async (path: string) => {
+      const result = await window.pdfApi.openRecentFile(path)
+      if (result.ok && result.path) {
+        await openPath(result.path)
+        return
+      }
+      setRecentPdfs((previous) => {
+        const next = previous.filter((item) => item.path !== path)
+        saveRecentPdfs(next)
+        return next
+      })
+    },
+    [openPath],
+  )
 
   useEffect(() => {
     return window.pdfApi.onOpenDocument?.((path: string) => {
@@ -7808,22 +7866,72 @@ export default function App() {
               </button>
             </div>
           ) : (
-            <div className="pdf-empty-state">
-              <div className="pdf-empty-icon">
-                <IconOpen size={44} />
-              </div>
-              <h2 className="pdf-empty-title">{t('noFile')}</h2>
-              <p className="pdf-empty-desc">{t('openPdfHint')}</p>
-              <button
-                type="button"
-                className="pdf-empty-open-btn"
-                onClick={() => void handleOpenPdf()}
-                autoFocus
-              >
-                <IconOpen size={18} />
-                <span>{t('openPdf')}</span>
-                <kbd className="pdf-empty-kbd">Ctrl+O</kbd>
-              </button>
+            <div className="pdf-home">
+              <section className="pdf-home-hero">
+                <div className="pdf-empty-icon">
+                  <IconOpen size={44} />
+                </div>
+                <div>
+                  <h1 className="pdf-home-brand">EditPDFNau</h1>
+                  <p className="pdf-empty-desc">{t('openPdfHint')}</p>
+                </div>
+                <button
+                  type="button"
+                  className="pdf-empty-open-btn"
+                  onClick={() => void handleOpenPdf()}
+                  autoFocus
+                >
+                  <IconOpen size={18} />
+                  <span>{t('openPdf')}</span>
+                  <kbd className="pdf-empty-kbd">Ctrl+O</kbd>
+                </button>
+              </section>
+              <section className="pdf-home-recents">
+                <div className="pdf-home-section-head">
+                  <h2>{lang === 'vi' ? 'Đã mở gần đây' : 'Recent files'}</h2>
+                  {recentPdfs.length > 0 && (
+                    <button
+                      type="button"
+                      className="pdf-home-clear"
+                      onClick={() => {
+                        saveRecentPdfs([])
+                        setRecentPdfs([])
+                      }}
+                    >
+                      {lang === 'vi' ? 'Xóa danh sách' : 'Clear list'}
+                    </button>
+                  )}
+                </div>
+                {recentPdfs.length === 0 ? (
+                  <div className="pdf-home-empty">
+                    {lang === 'vi'
+                      ? 'Các tệp PDF bạn mở sẽ xuất hiện ở đây.'
+                      : 'PDF files you open will appear here.'}
+                  </div>
+                ) : (
+                  <div className="pdf-recent-list">
+                    {recentPdfs.map((item) => {
+                      const name = item.path.split(/[/\\]/).pop() || item.path
+                      return (
+                        <button
+                          type="button"
+                          className="pdf-recent-item"
+                          key={item.path}
+                          title={item.path}
+                          onClick={() => void handleOpenRecent(item.path)}
+                        >
+                          <span className="pdf-recent-icon">PDF</span>
+                          <span className="pdf-recent-copy">
+                            <strong>{name}</strong>
+                            <span>{item.path}</span>
+                          </span>
+                          <time>{new Date(item.openedAt).toLocaleDateString()}</time>
+                        </button>
+                      )
+                    })}
+                  </div>
+                )}
+              </section>
             </div>
           )}
         </div>
@@ -10260,7 +10368,7 @@ export default function App() {
                                       )
                                   return (
                                     <>
-                                      {textDraft.cover && !draftErased && (
+                                      {!draftErased && (
                                         <div
                                           className="pdf-textedit-cover"
                                           style={{
